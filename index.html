@@ -1,0 +1,64 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .outputText {
+        display: block;
+        margin-top: 16px;
+        width: 400px;
+      }
+
+      .notify {
+        margin-top: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <input type="date" class="datePicker" />
+    <input type="text" class="outputText" readonly />
+    <div class="notify"></div>
+    <script>
+      let datePicker = document.querySelector(".datePicker");
+      let outputText = document.querySelector(".outputText");
+      let notify = document.querySelector(".notify");
+      let output = "";
+
+      datePicker.addEventListener("input", generateOutput);
+
+      function input(e) {
+        return new Promise((res, rej) => {
+          let a = datePicker.value;
+          let b = new Date(a);
+          let year = b.getFullYear();
+          let month =
+            b.getMonth() + 1 < 10 ? "0" + (b.getMonth() + 1) : b.getMonth() + 1;
+          let date = b.getDate() + 1 < 10 ? "0" + b.getDate() : b.getDate();
+          let myDate = `${year}${month}${date}`;
+          let url = `https://www.ycs.or.kr/yeyak/fmcs/43?facilities_type=T&base_date=${myDate}&center=YCS04&type=1002&part=02&place=`;
+
+          for (let i = 1; i < 19; i++) {
+            if (i < 18) {
+              output += url + i + ",";
+            } else {
+              output += url + i;
+            }
+          }
+          res(output);
+        });
+      }
+
+      function generateOutput() {
+        input().then((output) => {
+          console.log(output);
+          outputText.value = output;
+          outputText.select();
+          document.execCommand("copy");
+          notify.textContent = `Copied to clipboard!`;
+          console.log(output);
+        });
+      }
+    </script>
+  </body>
+</html>
